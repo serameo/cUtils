@@ -116,6 +116,11 @@ struct rbtree_node_s* rbtree_get_max(rbtree_t* rbtree)
     return RB_MAX(rbtree, &rbtree->head);
 }
 
+void* rbtree_get_data(struct rbtree_node_s* n)
+{
+    return (n ? n->data : 0);
+}
+
 rbtree_t* rbtree_new(rbtree_cmp_f cmp, rbtree_dup_f dup, rbtree_rel_f rel)
 {
     rbtree_t* rbtree = (rbtree_t*)calloc(1, sizeof(struct rbtree_s));
