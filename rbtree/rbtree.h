@@ -58,6 +58,7 @@ struct rbtree_node_s* rbtree_get_next(rbtree_t* rbtree, struct rbtree_node_s* n)
 struct rbtree_node_s* rbtree_get_prev(rbtree_t* rbtree, struct rbtree_node_s* n);
 struct rbtree_node_s* rbtree_get_min(rbtree_t* rbtree);
 struct rbtree_node_s* rbtree_get_max(rbtree_t* rbtree);
+void*  rbtree_get_data(struct rbtree_node_s* n);
 /*rbtree_xxx()*/
 rbtree_t* rbtree_new(rbtree_cmp_f cmp, rbtree_dup_f dup, rbtree_rel_f rel);
 struct rbtree_node_s* rbtree_insert(rbtree_t* rbtree, void* p1, int sz1);
