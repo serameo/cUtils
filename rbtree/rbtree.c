@@ -121,6 +121,18 @@ void* rbtree_get_data(struct rbtree_node_s* n)
     return (n ? n->data : 0);
 }
 
+int    rbtree_get_int(struct rbtree_node_s* n, int def)
+{
+    void* data = rbtree_get_data(n);
+    return (data ? *(int*)data : def);
+}
+
+char*  rbtree_get_string(struct rbtree_node_s* n, char* def)
+{
+    void* data = rbtree_get_data(n);
+    return (data ? (char*)data : def);
+}
+
 rbtree_t* rbtree_new(rbtree_cmp_f cmp, rbtree_dup_f dup, rbtree_rel_f rel)
 {
     rbtree_t* rbtree = (rbtree_t*)calloc(1, sizeof(struct rbtree_s));
