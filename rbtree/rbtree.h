@@ -1,3 +1,8 @@
+/*
+File name: rbtree.h
+Author: Seree Meo Rakwong
+Date: 05-JAN-2024
+*/
 #ifndef __RBTREE_H__
 #define __RBTREE_H__
 #include "tree.h"
