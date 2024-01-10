@@ -9,27 +9,27 @@ Purpose: Implement a tree like unix tree system
 #include <string.h>
 #include "uxtree.h"
 
-struct uxtree_node_s
+struct uxt_node_s
 {
-    struct uxtree_node_s*   parent;
-    struct uxtree_node_s*   fchild; /*first child*/
-    struct uxtree_node_s*   lchild; /*last child*/
-    struct uxtree_node_s*   prev;   /*previous sibling*/
-    struct uxtree_node_s*   next;   /*next sibling*/
+    struct uxt_node_s*   parent;
+    struct uxt_node_s*   fchild; /*first child*/
+    struct uxt_node_s*   lchild; /*last child*/
+    struct uxt_node_s*   prev;   /*previous sibling*/
+    struct uxt_node_s*   next;   /*next sibling*/
     void*   data;
     char*   name;
     int     nchild;     /*number of children*/
     int     nlevel;     /*tree level*/
 };
 
-struct uxtree_s
+struct uxt_s
 {
-    struct uxtree_node_s*   root;   /*always be '/'*/
+    struct uxt_node_s*   root;   /*always be '/'*/
 };
 
-struct uxtree_node_s* uxtree__new_node(const void* data, int sz1, const char* nm1)
+struct uxt_node_s* uxt__new_node(const void* data, int sz1, const char* nm1)
 {
-    struct uxtree_node_s* node = (struct uxtree_node_s*)calloc(1, sizeof(struct uxtree_node_s));
+    struct uxt_node_s* node = (struct uxt_node_s*)calloc(1, sizeof(struct uxt_node_s));
     if (!node)
     {
         return 0;
@@ -47,14 +47,14 @@ struct uxtree_node_s* uxtree__new_node(const void* data, int sz1, const char* nm
     return node;
 };
 
-uxtree_t* uxtree_new()
+uxt_t* uxt_new()
 {
-    uxtree_t* tree = (uxtree_t*)calloc(1, sizeof(struct uxtree_s));
+    uxt_t* tree = (uxt_t*)calloc(1, sizeof(struct uxt_s));
     if (!tree)
     {
         return 0;
     }
-    tree->root = uxtree__new_node(0, 0, "/");
+    tree->root = uxt__new_node(0, 0, "/");
     if (!tree->root)
     {
         free(tree);
@@ -63,19 +63,19 @@ uxtree_t* uxtree_new()
     return tree;
 }
 
-void uxtree_del(uxtree_t* tree)
+void uxt_del(uxt_t* tree)
 {
     if (tree)
     {
-        uxtree_remove_all(tree);
+        uxt_remove_all(tree);
         free(tree->root);
         free(tree);
     }
 }
 
-struct uxtree_node_s* uxtree__find_child(uxtree_t* tree, struct uxtree_node_s* startnode, const char* nm1)
+struct uxt_node_s* uxt__find_child(uxt_t* tree, struct uxt_node_s* startnode, const char* nm1)
 {
-    struct uxtree_node_s* node = startnode;
+    struct uxt_node_s* node = startnode;
     while (node)
     {
         if (0 == strcmp(nm1, node->name))
@@ -87,22 +87,22 @@ struct uxtree_node_s* uxtree__find_child(uxtree_t* tree, struct uxtree_node_s* s
     return 0;
 }
 
-struct uxtree_node_s* uxtree_insert(uxtree_t* tree, struct uxtree_node_s* parent, const void* data, int sz1, const char* nm1)
+struct uxt_node_s* uxt_insert(uxt_t* tree, struct uxt_node_s* parent, const void* data, int sz1, const char* nm1)
 {
-    struct uxtree_node_s* newnode = 0;
-    struct uxtree_node_s* child = 0;
+    struct uxt_node_s* newnode = 0;
+    struct uxt_node_s* child = 0;
     if (!parent)
     {
         parent = tree->root;
     }
     /*check all children MUST NOT BE THE SAME NAME*/
-    child = uxtree__find_child(tree, parent->fchild, nm1);
+    child = uxt__find_child(tree, parent->fchild, nm1);
     if (child)
     {
         /*always not allowed duplicated name*/
         return 0;
     }
-    newnode = uxtree__new_node(data, sz1, nm1);
+    newnode = uxt__new_node(data, sz1, nm1);
     if (!newnode)
     {
         return 0;
@@ -126,24 +126,24 @@ struct uxtree_node_s* uxtree_insert(uxtree_t* tree, struct uxtree_node_s* parent
     return newnode;
 }
 
-struct uxtree_node_s* uxtree_insert_sort(uxtree_t* tree, struct uxtree_node_s* parent, const void* data, int sz1, const char* nm1)
+struct uxt_node_s* uxt_insert_sort(uxt_t* tree, struct uxt_node_s* parent, const void* data, int sz1, const char* nm1)
 {
-    struct uxtree_node_s* newnode = 0;
-    struct uxtree_node_s* child = 0;
-    struct uxtree_node_s* prev = 0;
-    struct uxtree_node_s* curnode = 0;
+    struct uxt_node_s* newnode = 0;
+    struct uxt_node_s* child = 0;
+    struct uxt_node_s* prev = 0;
+    struct uxt_node_s* curnode = 0;
     if (!parent)
     {
         parent = tree->root;
     }
     /*check all children MUST NOT BE THE SAME NAME*/
-    child = uxtree__find_child(tree, parent->fchild, nm1);
+    child = uxt__find_child(tree, parent->fchild, nm1);
     if (child)
     {
         /*always not allowed duplicated name*/
         return 0;
     }
-    newnode = uxtree__new_node(data, sz1, nm1);
+    newnode = uxt__new_node(data, sz1, nm1);
     if (!newnode)
     {
         return 0;
@@ -197,11 +197,11 @@ struct uxtree_node_s* uxtree_insert_sort(uxtree_t* tree, struct uxtree_node_s* p
 }
 
 
-void uxtree__remove_node(struct uxtree_node_s* parent, struct uxtree_node_s* delnode)
+void uxt__remove_node(struct uxt_node_s* parent, struct uxt_node_s* delnode)
 {
-    struct uxtree_node_s* prev_lchild = 0;
-    struct uxtree_node_s* prev   = 0;
-    struct uxtree_node_s* next   = 0;
+    struct uxt_node_s* prev_lchild = 0;
+    struct uxt_node_s* prev   = 0;
+    struct uxt_node_s* next   = 0;
 
     if (!parent || !delnode)
     {
@@ -240,11 +240,11 @@ void uxtree__remove_node(struct uxtree_node_s* parent, struct uxtree_node_s* del
     free(delnode);
 }
 
-void uxtree__remove(uxtree_t* tree, struct uxtree_node_s* delnode)
+void uxt__remove(uxt_t* tree, struct uxt_node_s* delnode)
 {
-    struct uxtree_node_s* parent = 0;
-    struct uxtree_node_s* prev_lchild   = 0;
-    struct uxtree_node_s* lchild = 0;
+    struct uxt_node_s* parent = 0;
+    struct uxt_node_s* prev_lchild   = 0;
+    struct uxt_node_s* lchild = 0;
 
     if (!delnode)
     {
@@ -255,47 +255,47 @@ void uxtree__remove(uxtree_t* tree, struct uxtree_node_s* delnode)
     if (!delnode->lchild)
     {
         /*update parent info*/
-        uxtree__remove_node(parent, delnode);
+        uxt__remove_node(parent, delnode);
         return;
     }
     /*delete the last child first*/
     prev_lchild   = delnode->lchild->prev;
-    uxtree__remove(tree, delnode->lchild);
+    uxt__remove(tree, delnode->lchild);
 
     /* delete the previous last child */
-    uxtree__remove(tree, prev_lchild);
+    uxt__remove(tree, prev_lchild);
     
     /* the last */
-    uxtree__remove_node(parent, delnode);
+    uxt__remove_node(parent, delnode);
 }
 
-void uxtree_remove(uxtree_t* tree, struct uxtree_node_s* delnode)
+void uxt_remove(uxt_t* tree, struct uxt_node_s* delnode)
 {
-    struct uxtree_node_s* parent = (delnode ? delnode->parent : 0);
-    uxtree__remove(tree, delnode);
-    /*uxtree__remove_node(parent, delnode);*/
+    struct uxt_node_s* parent = (delnode ? delnode->parent : 0);
+    uxt__remove(tree, delnode);
+    /*uxt__remove_node(parent, delnode);*/
 }
 
-void uxtree_remove_all(uxtree_t* tree)
+void uxt_remove_all(uxt_t* tree)
 {
-    struct uxtree_node_s* delnode = tree->root->lchild;
-    struct uxtree_node_s* prev = 0;
+    struct uxt_node_s* delnode = tree->root->lchild;
+    struct uxt_node_s* prev = 0;
     
     while (delnode)
     {
         prev = delnode->prev;
-        uxtree_remove(tree, delnode);
+        uxt_remove(tree, delnode);
         delnode = prev;
     }
 }
 
-struct uxtree_node_s* uxtree__find(uxtree_t* tree,
-    struct uxtree_node_s* startnode,
+struct uxt_node_s* uxt__find(uxt_t* tree,
+    struct uxt_node_s* startnode,
     void* finddata,
     int (*cmp)(int level, void* cmpdata, void* finddata, void* userdata),
     void* userdata)
 {
-    struct uxtree_node_s* foundnode = 0;
+    struct uxt_node_s* foundnode = 0;
     if (!startnode || !cmp || !finddata)
     {
         return 0;
@@ -304,27 +304,27 @@ struct uxtree_node_s* uxtree__find(uxtree_t* tree,
     {
         return startnode;
     }
-    foundnode = uxtree__find(tree, startnode->fchild, finddata, cmp, userdata);
+    foundnode = uxt__find(tree, startnode->fchild, finddata, cmp, userdata);
     if (0 != foundnode)
     {
         return foundnode;
     }
-    foundnode = uxtree__find(tree, startnode->next, finddata, cmp, userdata);
+    foundnode = uxt__find(tree, startnode->next, finddata, cmp, userdata);
     return foundnode;
 }
 
-struct uxtree_node_s* uxtree_find(uxtree_t* tree, 
+struct uxt_node_s* uxt_find(uxt_t* tree, 
     void* finddata,
     int (*cmp)(int level, void* cmpdata, void* finddata, void* userdata),
     void* userdata)
 {
-    return uxtree__find(tree, tree->root->fchild, finddata, cmp, userdata);
+    return uxt__find(tree, tree->root->fchild, finddata, cmp, userdata);
 }
 
-struct uxtree_node_s* uxtree__find_path(uxtree_t* tree, struct uxtree_node_s* startnode, const char* path)
+struct uxt_node_s* uxt__find_path(uxt_t* tree, struct uxt_node_s* startnode, const char* path)
 {
-    struct uxtree_node_s* foundnode = 0;
-    struct uxtree_node_s* curnode = startnode;
+    struct uxt_node_s* foundnode = 0;
+    struct uxt_node_s* curnode = startnode;
     char psz[BUFSIZ + 1];
     char* token;
     char* pos;
@@ -361,28 +361,28 @@ struct uxtree_node_s* uxtree__find_path(uxtree_t* tree, struct uxtree_node_s* st
             {
                 return curnode;
             }
-            return uxtree__find_path(tree, curnode->fchild, subpath);
+            return uxt__find_path(tree, curnode->fchild, subpath);
         }
     }
     else
     {
         /*find the sibling nodes*/
-        return uxtree__find_path(tree, curnode->next, path);
+        return uxt__find_path(tree, curnode->next, path);
     }
     return 0;
 }
 
-struct uxtree_node_s* uxtree_find_path(uxtree_t* tree, const char* path)
+struct uxt_node_s* uxt_find_path(uxt_t* tree, const char* path)
 {
-    return uxtree__find_path(tree, tree->root->fchild, path);
+    return uxt__find_path(tree, tree->root->fchild, path);
 }
 
-int uxtree_get_path(uxtree_t* tree, struct uxtree_node_s* node, char* outpath, int outlen)
+int uxt_get_path(uxt_t* tree, struct uxt_node_s* node, char* outpath, int outlen)
 {
     char subpath[BUFSIZ + 1];
     char parpath[BUFSIZ + 1];
     int len = 0;
-    struct uxtree_node_s* parent = (node ? node->parent : 0);
+    struct uxt_node_s* parent = (node ? node->parent : 0);
     if (!node)
     {
         return 0;
@@ -415,8 +415,8 @@ int uxtree_get_path(uxtree_t* tree, struct uxtree_node_s* node, char* outpath, i
     return len;
 }
 
-/*struct uxtree_node_s properties*/
-void uxtree_update(struct uxtree_node_s* node, void* data, int sz1)
+/*struct uxt_node_s properties*/
+void uxt_update(struct uxt_node_s* node, void* data, int sz1)
 {
     if (sz1 > 0 && data)
     {
@@ -430,7 +430,7 @@ void uxtree_update(struct uxtree_node_s* node, void* data, int sz1)
     }
 }
 
-void uxtree_rename(struct uxtree_node_s* node, const char* name)
+void uxt_rename(struct uxt_node_s* node, const char* name)
 {
     if (name && strlen(name) > 0)
     {
@@ -444,47 +444,47 @@ void uxtree_rename(struct uxtree_node_s* node, const char* name)
     }
 }
 
-int  uxtree_children(struct uxtree_node_s* node)
+int  uxt_children(struct uxt_node_s* node)
 {
     return (node ? node->nchild : -1);
 }
 
-const char* uxtree_get_name(struct uxtree_node_s* node)
+const char* uxt_get_name(struct uxt_node_s* node)
 {
     return (node ? (const char*)node->name : 0);
 }
 
-void* uxtree_get_data(struct uxtree_node_s* node)
+void* uxt_get_data(struct uxt_node_s* node)
 {
     return (node ? node->data : 0);
 }
 
-int uxtree_get_level(struct uxtree_node_s* node)
+int uxt_get_level(struct uxt_node_s* node)
 {
     return (node ? node->nlevel : -1);
 }
 
 
-struct uxtree_node_s* uxtree_get_parent(struct uxtree_node_s* node)
+struct uxt_node_s* uxt_get_parent(struct uxt_node_s* node)
 {
     return (node ? node->parent : 0);
 }
 
-struct uxtree_node_s* uxtree_get_firstchild(struct uxtree_node_s* node)
+struct uxt_node_s* uxt_get_firstchild(struct uxt_node_s* node)
 {
     return (node ? node->fchild : 0);
 }
 
-struct uxtree_node_s* uxtree_get_lastchild(struct uxtree_node_s* node)
+struct uxt_node_s* uxt_get_lastchild(struct uxt_node_s* node)
 {
     return (node ? node->lchild : 0);
 }
 
-struct uxtree_node_s* uxtree_get_prev(struct uxtree_node_s* node)
+struct uxt_node_s* uxt_get_prev(struct uxt_node_s* node)
 {
     return (node ? node->prev : 0);
 }
-struct uxtree_node_s* uxtree_get_next(struct uxtree_node_s* node)
+struct uxt_node_s* uxt_get_next(struct uxt_node_s* node)
 {
     return (node ? node->next : 0);
 }
