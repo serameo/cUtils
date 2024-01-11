@@ -121,16 +121,10 @@ int bstree__compare(const void* p1, const void* p2)
     struct  bstree_item_s* q2 = (struct  bstree_item_s*)p2;
     if (!q1->data || BSTREE_ITEM_UNUSED == q1->used)
     {
-        printf("[q1:%d][q2:%d]\n", 
-            (q1->data ? *(int*)q1->data : -2),
-            (q2->data ? *(int*)q2->data : -1));
         return -1;
     }
     else if (!q2->data || BSTREE_ITEM_UNUSED == q2->used)
     {
-        printf("[q1:%d][q2:%d]\n", 
-            (q1->data ? *(int*)q1->data : -20),
-            (q2->data ? *(int*)q2->data : -10));
         return -1;
     }
     return q1->bst->cmp(q1->data, q2->data, q1->bst->cmp_userdata);
@@ -150,25 +144,8 @@ struct  bstree_item_s* bstree_find(
     /*if bst is modified (adding, updating, deleting)*/
     if (bst->modified != BSTREE_ITEMS_SORTED)
     {
-        printf("sorting...\n");
-        {
-            int i = 0;
-            printf("before sorting...\n");
-            for (i = 0; i < bst->nmaxitems; ++i)
-            {
-                printf("[%d:%d]\n", i, (bst->items[i].data ? *(int*)(bst->items[i].data) : -1));
-            }
-        }
         qsort(bst->items, bst->nmaxitems, sizeof(struct bstree_item_s), bstree__compare);
         bst->modified = BSTREE_ITEMS_SORTED;
-        {
-            int i = 0;
-            printf("after sorting...\n");
-            for (i = 0; i < bst->nmaxitems; ++i)
-            {
-                printf("[%d:%d]\n", i, (bst->items[i].data ? *(int*)(bst->items[i].data) : -1));
-            }
-        }
     }
     key.data = finddata;
     key.bst  = bst;
