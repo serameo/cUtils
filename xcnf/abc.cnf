@@ -1,0 +1,11 @@
+#this is a test
+screen1.caption = "hello world"
+screen1.width = 800
+screen1.height = 600
+#[section1] this is also a comment line
+[section1]
+screen1.width = 800
+screen1.height = 600
+screen1.caption = "hello  world"
+scree2.title = "aloha  ";
+
