@@ -292,7 +292,7 @@ create_node:
             strcpy(node->value, value1);
         }
         /*insert to tree*/
-        bstree_pushback(xcnf->configs, node, sizeof(struct xcnf_node_s));
+        bstree_push_back(xcnf->configs, node, sizeof(struct xcnf_node_s));
     }
 
 create_line:
