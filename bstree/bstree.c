@@ -200,7 +200,7 @@ void*   bstree_get_data(struct  bstree_item_s* item)
     return (item ? item->data : 0);
 }
 
-struct  bstree_item_s* bstree_pushback(bstree_t* bst, void* data, int sz1)
+struct  bstree_item_s* bstree_push_back(bstree_t* bst, void* data, int sz1)
 {
     int last_unused = bst->last_unused;
     int i = (last_unused < 0 ? 0 : last_unused);
