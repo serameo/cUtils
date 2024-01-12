@@ -42,9 +42,9 @@ int main()
     i = 8;
     bstree_set(bst, 8, &i, sizeof(int)); /* do nothing*/
     i = 8;
-    bstree_pushback(bst, &i, sizeof(int)); /* re-allocate the new memory*/
+    bstree_push_back(bst, &i, sizeof(int)); /* re-allocate the new memory*/
     i = 16;
-    bstree_pushback(bst, &i, sizeof(int));
+    bstree_push_back(bst, &i, sizeof(int));
     
     printf("test finding...\n");
     i = 3;
