@@ -28,7 +28,7 @@ bstree_pushback() - add the new data if the bst object is full,
 */
 struct  bstree_item_s* bstree_push_back(bstree_t* bst, void* data, int sz1);
 void    bstree_clear(bstree_t* bst);
-struct  bstree_item_s* bstree_find(
+void*   bstree_find(
             bstree_t* bst,
             void* finddata,
             int (*cmp)(void* p1, void* p2, void* userdata),
