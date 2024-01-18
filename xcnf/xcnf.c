@@ -10,7 +10,10 @@ Purpose: Implement a simple configuration file
 #include "bstree.h"
 #include "xcnf.h"
 
-
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 /*
 # this is a line comment
 screen.width = 800
@@ -98,6 +101,7 @@ struct xcnf_section_s
 {
     struct xcnf_section_s*  next;
     char*   name;
+    struct xcnf_node_s*     nodes;
 };
 
 int xcnf__compare(void* p1, void* p2, void* userdata)
@@ -371,3 +375,6 @@ double xcnf_get_float(xcnf_t* xcnf, char* section, char* key, double def)
 }
 
 
+#ifdef __cplusplus
+}
+#endif
