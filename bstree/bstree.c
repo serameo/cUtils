@@ -134,7 +134,7 @@ int bstree__compare(const void* p1, const void* p2)
     return q1->bst->cmp(q1->data, q2->data, q1->bst->cmp_userdata);
 }
 
-struct  bstree_item_s* bstree_find(
+void* bstree_find(
             bstree_t* bst,
             void* finddata,
             int (*cmp)(void* p1, void* p2, void* userdata),
@@ -156,7 +156,7 @@ struct  bstree_item_s* bstree_find(
     key.used = BSTREE_ITEM_USED;
 
     item = bsearch(&key, bst->items, bst->nmaxitems, sizeof(struct bstree_item_s), bstree__compare);
-    return item;
+    return (item ? item->data : 0);
 }
 
 void* bstree_get(bstree_t* bst, int at)
