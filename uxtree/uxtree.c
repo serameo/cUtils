@@ -9,6 +9,10 @@ Purpose: Implement a tree like unix tree system
 #include <string.h>
 #include "uxtree.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 struct uxtree_node_s
 {
     struct uxtree_node_s*   parent;
@@ -488,3 +492,7 @@ struct uxtree_node_s* uxtree_get_next(struct uxtree_node_s* node)
 {
     return (node ? node->next : 0);
 }
+
+#ifdef __cplusplus
+}
+#endif
