@@ -19,8 +19,8 @@ typedef struct bstree_s bstree_t;
 bstree_t*  bstree_new(int nitems);
 void    bstree_del(bstree_t* bst);
 
-struct  bstree_item_s* bstree_get(bstree_t* bst, int at);
-struct  bstree_item_s* bstree_set(bstree_t* bst, int at, void* data, int sz1);
+void* bstree_get(bstree_t* bst, int at);
+void* bstree_set(bstree_t* bst, int at, void* data, int sz1);
 /*
 bstree_pushback() - add the new data if the bst object is full, 
                     bst will try adding more space to add the new data
@@ -33,8 +33,6 @@ struct  bstree_item_s* bstree_find(
             void* finddata,
             int (*cmp)(void* p1, void* p2, void* userdata),
             void* userdata);
-/*struct bstree_item_s properties*/
-void*   bstree_get_data(struct  bstree_item_s* item);
 
 #ifdef __cplusplus
 }

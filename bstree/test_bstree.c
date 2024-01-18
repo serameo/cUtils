@@ -9,12 +9,12 @@ int test_cmp(void* p1, void* p2, void* userdata)
     int j = (p2 ? *(int*)p2 : -1);
     if (!p1 || !p2)
     {
-        printf("[p1:%d][p2:%d]...\n",
+        /*printf("[p1:%d][p2:%d]...\n",
             (p1 ? i : -1),
-            (p2 ? j : -2));
+            (p2 ? j : -2));*/
         return 1;
     }
-    printf("[p1:%d,p2:%d]\n", i, j);
+    /*printf("[p1:%d,p2:%d]\n", i, j);*/
     return (i-j);
 }
 
@@ -48,7 +48,15 @@ int main()
     
     printf("test finding...\n");
     i = 3;
-    bstree_find(bst, &i, test_cmp, 0);
+    item = bstree_find(bst, &i, test_cmp, 0);
+    if (item)
+    {
+        printf("found %d\n", i);
+    }
+    else
+    {
+        printf("not found %d\n", i);
+    }
     
     bstree_del(bst);
     return 0;

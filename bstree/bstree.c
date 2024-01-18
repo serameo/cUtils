@@ -9,6 +9,10 @@ Purpose: Implement a simple binary search bst using qsort() and bsearch()
 #include <string.h>
 #include "bstree.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 #define BSTREE_INIT_ITEMS          64
 #define BSTREE_INCREMENT_ITEMS     64
 
@@ -155,16 +159,16 @@ struct  bstree_item_s* bstree_find(
     return item;
 }
 
-struct  bstree_item_s* bstree_get(bstree_t* bst, int at)
+void* bstree_get(bstree_t* bst, int at)
 {
     if (at < 0 || at >= bst->nmaxitems)
     {
         return 0;
     }
-    return &bst->items[at];
+    return &bst->items[at].data;
 }
 
-struct  bstree_item_s* bstree_set(bstree_t* bst, int at, void* data, int sz1)
+void* bstree_set(bstree_t* bst, int at, void* data, int sz1)
 {
     struct bstree_item_s* item = bstree_get(bst, at);
     void* newdata = 0;
@@ -192,12 +196,7 @@ struct  bstree_item_s* bstree_set(bstree_t* bst, int at, void* data, int sz1)
         item->used = BSTREE_ITEM_USED;
     }
     bst->modified = BSTREE_ITEMS_MODIFIED;
-    return item;
-}
-
-void*   bstree_get_data(struct  bstree_item_s* item)
-{
-    return (item ? item->data : 0);
+    return newdata;
 }
 
 struct  bstree_item_s* bstree_push_back(bstree_t* bst, void* data, int sz1)
@@ -259,3 +258,7 @@ struct  bstree_item_s* bstree_push_back(bstree_t* bst, void* data, int sz1)
     }
     return bstree_set(bst, last_unused, data, sz1);
 }
+
+#ifdef __cplusplus
+}
+#endif
