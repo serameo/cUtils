@@ -10,7 +10,10 @@ Purpose: Implement a stack
 #include <string.h>
 #include "stack.h"
 
-
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 struct stack_item_s
 {
     void*   data;
@@ -130,3 +133,6 @@ void stack_pop(stack_t* stack)
     --stack->idx;
 }
 
+#ifdef __cplusplus
+}
+#endif
