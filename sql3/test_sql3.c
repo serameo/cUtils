@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "sql3.h"
+/*
+Compile and link:
+$> gcc test_sql3.c sql3.c -lsqlite3
+*/
 
 /*****************************************************************************
 CREATE TABLE student(
