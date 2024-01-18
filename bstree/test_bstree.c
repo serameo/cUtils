@@ -21,6 +21,7 @@ int test_cmp(void* p1, void* p2, void* userdata)
 int main()
 {
     int i;
+    int *pi = 0;
     struct bstree_item_s* item = 0;
     bstree_t* bst = bstree_new(8);
     i = 5;
@@ -48,14 +49,14 @@ int main()
     
     printf("test finding...\n");
     i = 3;
-    item = bstree_find(bst, &i, test_cmp, 0);
-    if (item)
+    pi = (int*)bstree_find(bst, &i, test_cmp, 0);
+    if (pi)
     {
-        printf("found %d\n", i);
+        printf("found %d\n", *pi);
     }
     else
     {
-        printf("not found %d\n", i);
+        printf("not found %d\n", *pi);
     }
     
     bstree_del(bst);
