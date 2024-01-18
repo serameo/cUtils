@@ -9,6 +9,10 @@ Purpose: Implement a queue
 #include <string.h>
 #include "queue.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 struct queue_node_s
 {
     struct queue_node_s* next;
@@ -117,3 +121,7 @@ void* queue_front(queue_t* queue)
 {
     return (queue->first ? queue->first->data : 0);
 }
+
+#ifdef __cplusplus
+}
+#endif
