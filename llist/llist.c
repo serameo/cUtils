@@ -9,6 +9,10 @@ Purpose: Implement a doubly-linked list
 #include <string.h>
 #include "llist.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 struct llist_node_s
 {
     struct llist_node_s* prev;
@@ -277,3 +281,6 @@ struct llist_node_s* llist_find_prev(
     return 0;
 }
 
+#ifdef __cplusplus
+}
+#endif
