@@ -152,7 +152,7 @@ PARAMETERS:
 */
 typedef int (*sql3_copy_callback)(void* userptr, int col, const char* value);
 
-struct sql3_select_s
+struct sql3_sel_s
 {
     int             size;   /*size of an item per record*/
     int             nrows;  /*a number of rows*/
@@ -161,7 +161,7 @@ struct sql3_select_s
                             /*it depends on the implementation of callback*/
                             /*it always not be greater than nrows*/
 };
-typedef struct sql3_select_s sql3_sel_t;
+typedef struct sql3_sel_s sql3_sel_t;
 
 /*****************************************************************************
 sql3_select() would return an array of records
