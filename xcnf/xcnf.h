@@ -28,6 +28,7 @@ struct xcnf_s;
 typedef struct xcnf_s xcnf_t;
 
 xcnf_t* xcnf_new();
+void    xcnf_del(xcnf_t* xcnf);
 int     xcnf_load(xcnf_t* xcnf, FILE* fp);
 char*   xcnf_get(xcnf_t* xcnf, char* section, char* key, char* def);
 int     xcnf_get_int(xcnf_t* xcnf, char* section, char* key, int def);
