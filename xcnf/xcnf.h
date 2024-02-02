@@ -34,6 +34,9 @@ char*   xcnf_get(xcnf_t* xcnf, char* section, char* key, char* def);
 int     xcnf_get_int(xcnf_t* xcnf, char* section, char* key, int def);
 double  xcnf_get_float(xcnf_t* xcnf, char* section, char* key, double def);
 const char* xcnf_get_errmsg();
+/*simple external utilities*/
+char* xcnf__tolower(char* s);
+char* xcnf__toupper(char* s);
 
 #ifdef __cplusplus
 }
