@@ -125,3 +125,5 @@ void* queue_front(queue_t* queue)
 #ifdef __cplusplus
 }
 #endif
+
+#endif /*__QUEUE_H__*/
