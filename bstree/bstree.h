@@ -33,6 +33,7 @@ void*   bstree_find(
             void* finddata,
             int (*cmp)(void* p1, void* p2, void* userdata),
             void* userdata);
+int     bstree_foreach(bstree_t* bst, int(*foreach_f)(void* data, void* user), void* user);
 
 #ifdef __cplusplus
 }
