@@ -104,6 +104,23 @@ struct xcnf_section_s
     struct xcnf_node_s*     nodes;
 };
 
+char* xcnf__tolower(char* s)
+{
+    for (char *p = s; *p; p++)
+    {
+        *p = tolower(*p);
+    }
+    return s;
+}
+char* xcnf__toupper(char* s)
+{
+    for (char *p = s; *p; p++)
+    {
+        *p = toupper(*p);
+    }
+    return s;
+}
+
 int xcnf__compare(void* p1, void* p2, void* userdata)
 {
     struct xcnf_node_s* n1 = (struct xcnf_node_s*)p1;
