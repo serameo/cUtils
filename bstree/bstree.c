@@ -119,6 +119,21 @@ void bstree_clear(bstree_t* bst)
     bst->modified = BSTREE_ITEMS_SORTED;
 }
 
+int bstree_foreach(bstree_t* bst, int(*foreach_f)(void* data, void* user), void* user)
+{
+    int i = 0;
+    int rc = 0;
+    for (i = 0; i < bst->nmaxitems; ++i)
+    {
+        rc = foreach_f(bstree_get(bst, i), user);
+        if (0 != rc)
+        {
+            break;
+        }
+    }
+    return rc;
+}
+
 int bstree__compare(const void* p1, const void* p2)
 {
     struct  bstree_item_s* q1 = (struct  bstree_item_s*)p1;
