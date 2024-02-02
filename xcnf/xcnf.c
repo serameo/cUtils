@@ -1,12 +1,13 @@
 /*
 File name: xcnf.c
 Author: Seree Meo Rakwong
-Date: 11-JAN-2024
+Date: 01-FEB-2024
 Purpose: Implement a simple configuration file
 */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>/*tolower()*/
 #include "bstree.h"
 #include "xcnf.h"
 
@@ -50,6 +51,7 @@ struct xcnf_s
     struct xcnf_line_s*     lline;          /*keep the original file info*/
     struct xcnf_section_s*  fsection;
     struct xcnf_section_s*  lsection;
+    int     sensitive;
 };
 
 /*
@@ -126,7 +128,7 @@ int xcnf__compare(void* p1, void* p2, void* userdata)
     struct xcnf_node_s* n1 = (struct xcnf_node_s*)p1;
     struct xcnf_node_s* n2 = (struct xcnf_node_s*)p2;
     int rc = -1;/*not compared yet*/
-    
+
     if (!n1->section && !n2->section)
     {
         return strcmp(n1->key, n2->key);
@@ -143,7 +145,7 @@ int xcnf__compare(void* p1, void* p2, void* userdata)
     return rc;
 }
 
-xcnf_t* xcnf_new()
+xcnf_t* xcnf_new(int case_sensitive)
 {
     xcnf_t* xcnf = (xcnf_t*)calloc(1, sizeof(struct xcnf_s));
     if (!xcnf)
@@ -152,6 +154,7 @@ xcnf_t* xcnf_new()
         return 0;
     }
     xcnf->configs = bstree_new(-1);
+    xcnf->sensitive = case_sensitive;
     return xcnf;
 }
 
@@ -234,7 +237,7 @@ int xcnf__parse(xcnf_t* xcnf, char* text, int lineno)
     }
 
     if (XCNF_SECTION_BEGIN == token[0] &&
-        XCNF_SECTION_END   == token[strlen(token) - 1])
+        XCNF_SECTION_END == token[strlen(token) - 1])
     {
         /*section*/
         type = XCNF_TYPE_SECTION;
@@ -275,13 +278,17 @@ int xcnf__parse(xcnf_t* xcnf, char* text, int lineno)
         free(line_text);
         return -1;  /*no key or value*/
     }
-    
+
 create_section:
     if (XCNF_TYPE_SECTION == type)
     {
         section = (struct xcnf_section_s*)calloc(1, sizeof(struct xcnf_section_s));
         section->name = (char*)calloc(1, strlen(token));
         strncpy(section->name, &token[1], strlen(token) - 2);
+        if (!xcnf->sensitive)
+        {
+            strcpy(section->name, xcnf__tolower(section->name));
+        }
         if (xcnf->fsection)
         {
             xcnf->lsection->next = section;
@@ -293,7 +300,7 @@ create_section:
         }
     }
 
-create_node:
+/*create_node:*/
     if (XCNF_TYPE_KEYVAL == type)
     {
         node = (struct xcnf_node_s*)calloc(1, sizeof(struct xcnf_node_s));
@@ -311,6 +318,11 @@ create_node:
         {
             node->value = (char*)calloc(1, 1 + strlen(value1));
             strcpy(node->value, value1);
+        }
+        if (!xcnf->sensitive)
+        {
+            strcpy(node->key, xcnf__tolower(node->key));
+            strcpy(node->value, xcnf__tolower(node->value));
         }
         /*insert to tree*/
         bstree_push_back(xcnf->configs, node, sizeof(struct xcnf_node_s));
@@ -334,7 +346,7 @@ create_line:
     {
         xcnf->fline = xcnf->lline = line;
     }
-    
+
     return rc;
 }
 
@@ -368,14 +380,14 @@ char* xcnf_get(xcnf_t* xcnf, char* section, char* key, char* def)
     struct bstree_item_s* item = 0;
     struct xcnf_node_s* founddata = 0;
     struct xcnf_node_s finddata;
-    
+
     xcnf__errmsg = "";
 
-    finddata.section = section;
-    finddata.key = key;
+    finddata.section = (xcnf->sensitive ? section : xcnf__tolower(section));
+    finddata.key = (xcnf->sensitive ? key : xcnf__tolower(key));
     item = bstree_find(xcnf->configs, &finddata, xcnf__compare, xcnf);
 
-    founddata = (struct xcnf_node_s*)(item ? (char*)bstree_get_data(item) : 0);
+    founddata = (struct xcnf_node_s*)(item ? item : 0);
     return (founddata ? founddata->value : def);
 }
 
