@@ -1,7 +1,7 @@
 /*
 File name: queue.c
 Author: Seree Meo Rakwong
-Date: 17-JAN-2024
+Date: 02-FEB-2024
 Purpose: Implement a queue
 */
 #include <stdio.h>
@@ -54,11 +54,16 @@ void queue_deque_all(queue_t* queue)
         queue_deque(queue);
         first = queue->first;
     }
-    queue->first  = queue->last = 0;
+    queue->first = queue->last = 0;
     queue->nitems = 0;
 }
 
 void queue_deque(queue_t* queue)
+{
+    queue_deque_keep_data(queue, 0); /*not kept data (also free data)*/
+}
+
+void queue_deque_keep_data(queue_t* queue, int keep)
 {
     struct queue_node_s* first = queue->first;
     if (first)
@@ -68,12 +73,15 @@ void queue_deque(queue_t* queue)
         --queue->nitems;
         if (0 == queue->nitems)
         {
-            queue->first  = queue->last = 0;
+            queue->first = queue->last = 0;
         }
         /*free*/
         first->next = 0;
-        free(first->data);
-        first->data = 0;
+        if (!keep)
+        {
+            free(first->data);
+            first->data = 0;
+        }
         free(first);
         first = 0;
     }
@@ -117,13 +125,16 @@ void* queue_enque(queue_t* queue, void* data, int sz1)
     return newnode->data;
 }
 
-void* queue_front(queue_t* queue)
+struct queue_node_s* queue_front(queue_t* queue)
 {
-    return (queue->first ? queue->first->data : 0);
+    return (queue->first);
+}
+
+void* queue_get_data(struct queue_node_s* node)
+{
+    return (node ? node->data : 0);
 }
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif /*__QUEUE_H__*/
