@@ -52,6 +52,8 @@ struct xcnf_s
     struct xcnf_section_s*  fsection;
     struct xcnf_section_s*  lsection;
     int     sensitive;
+    int(*on_foreach)(char* section, char* key, char* value, void* user);
+    void* foreach_user;
 };
 
 /*
@@ -108,18 +110,32 @@ struct xcnf_section_s
 
 char* xcnf__tolower(char* s)
 {
-    for (char *p = s; *p; p++)
+    /*safe accessing memory*/
+    char sz[BUFSIZ + 1];
+    int i = 0;
+    int len = 0;
+    strcpy(sz, s);
+    len = strlen(sz);
+    for (i = 0; i < len; ++i)
     {
-        *p = tolower(*p);
+        sz[i] = tolower(sz[i]);
     }
+    strcpy(s, sz);
     return s;
 }
 char* xcnf__toupper(char* s)
 {
-    for (char *p = s; *p; p++)
+    /*safe accessing memory*/
+    char sz[BUFSIZ + 1];
+    int i = 0;
+    int len = 0;
+    strcpy(sz, s);
+    len = strlen(sz);
+    for (i = 0; i < len; ++i)
     {
-        *p = toupper(*p);
+        sz[i] = toupper(sz[i]);
     }
+    strcpy(s, sz);
     return s;
 }
 
@@ -128,7 +144,18 @@ int xcnf__compare(void* p1, void* p2, void* userdata)
     struct xcnf_node_s* n1 = (struct xcnf_node_s*)p1;
     struct xcnf_node_s* n2 = (struct xcnf_node_s*)p2;
     int rc = -1;/*not compared yet*/
-
+    if (!n1 && !n2)
+    {
+        return 1;
+    }
+    else if (n1 && !n2)
+    {
+        return -1;
+    }
+    else if (!n1 && n2)
+    {
+        return 1;
+    }
     if (!n1->section && !n2->section)
     {
         return strcmp(n1->key, n2->key);
@@ -153,7 +180,7 @@ xcnf_t* xcnf_new(int case_sensitive)
         xcnf__errmsg = XCNF_EMSG_INSUFFICIENT_MEMORY;
         return 0;
     }
-    xcnf->configs = bstree_new(-1);
+    xcnf->configs = bstree_new(64, 256); /*init 64 keys and can allocate up to 256 keys*/
     xcnf->sensitive = case_sensitive;
     return xcnf;
 }
@@ -380,14 +407,17 @@ char* xcnf_get(xcnf_t* xcnf, char* section, char* key, char* def)
     struct bstree_item_s* item = 0;
     struct xcnf_node_s* founddata = 0;
     struct xcnf_node_s finddata;
+    char szsection[BUFSIZ + 1];
+    char szkey[BUFSIZ + 1];
 
     xcnf__errmsg = "";
-
-    finddata.section = (xcnf->sensitive ? section : xcnf__tolower(section));
-    finddata.key = (xcnf->sensitive ? key : xcnf__tolower(key));
+    strcpy(szsection, section);
+    strcpy(szkey, key);
+    finddata.section = (xcnf->sensitive ? section : xcnf__tolower(szsection));
+    finddata.key = (xcnf->sensitive ? key : xcnf__tolower(szkey));
     item = bstree_find(xcnf->configs, &finddata, xcnf__compare, xcnf);
 
-    founddata = (struct xcnf_node_s*)(item ? item : 0);
+    founddata = (struct xcnf_node_s*)(item ? bstree_get_data(item) : 0);
     return (founddata ? founddata->value : def);
 }
 
@@ -401,6 +431,20 @@ double xcnf_get_float(xcnf_t* xcnf, char* section, char* key, double def)
 {
     char* ret = xcnf_get(xcnf, section, key, "0.0");
     return (ret ? atof(ret) : def);
+}
+
+int xcnf__foreach(void* data, void* user)
+{
+    xcnf_t* xcnf = (xcnf_t*)user;
+    struct xcnf_node_s* node = (struct xcnf_node_s*)data;
+    return xcnf->on_foreach(node->section, node->key, node->value, xcnf->foreach_user);
+}
+
+int xcnf_foreach(xcnf_t* xcnf, int(foreach_f)(char* section, char* key, char* value, void* user), void* user)
+{
+    xcnf->on_foreach = foreach_f;
+    xcnf->foreach_user = user;
+    return bstree_foreach(xcnf->configs, xcnf__foreach, xcnf);
 }
 
 
